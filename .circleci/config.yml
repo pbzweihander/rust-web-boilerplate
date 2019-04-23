@@ -1,0 +1,72 @@
+version: 2.1
+
+workflows:
+  test-and-build:
+    jobs:
+      - test
+      - build
+
+jobs:
+  test:
+    docker:
+      - image: clux/muslrust:nightly-2019-04-18
+    working_directory: /app
+    steps:
+      - run:
+          name: rustc version
+          command: |
+            rustc --version
+      - run:
+          name: Install dependencies
+          command: |
+            rustup component add rustfmt clippy
+      - checkout
+      - restore_cache:
+          keys:
+            - cache-v1-debug-{{ .Branch }}-{{ checksum "Cargo.lock" }}
+            - cache-v1-debug-{{ .Branch }}-
+            - cache-v1-debug-
+      - run:
+          name: Running fmt check...
+          command: |
+            cargo fmt -- --check --verbose
+      - run:
+          name: Running cargo clippy...
+          command: |
+            cargo clippy --all-targets
+      - run:
+          name: Running test...
+          command: |
+            cargo test
+      - save_cache:
+          paths:
+            - /root/.cargo/registry
+            - target/x86_64-unknown-linux-musl/debug/deps
+          key: cache-v1-debug-{{ .Branch }}-{{ checksum "Cargo.lock" }}
+
+  build:
+    docker:
+      - image: clux/muslrust:nightly-2019-04-18
+    working_directory: /app
+    steps:
+      - run:
+          name: rustc version
+          command: |
+            rustc --version
+      - checkout
+      - restore_cache:
+          keys:
+            - cache-v1-release-{{ .Branch }}-{{ checksum "Cargo.lock" }}
+            - cache-v1-release-{{ .Branch }}-
+            - cache-v1-release-
+      - run:
+          name: Building...
+          command: |
+            cargo build --release
+      - store_artifacts:
+          path: target/x86_64-unknown-linux-musl/release/rust-web-boilerplate
+      - save_cache:
+          paths:
+            - /root/.cargo/registry
+            - target/x86_64-unknown-linux-musl/release/deps
+          key: cache-v1-release-{{ .Branch }}-{{ checksum "Cargo.lock" }}
