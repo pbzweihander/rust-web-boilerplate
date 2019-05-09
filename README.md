@@ -11,7 +11,7 @@ This boilerplate uses [tide], which requires [futures 0.3], which requires the n
 You can setup nightly rust just for this project with following command:
 
 ```bash
-rustup override set nightly-2019-04-18
+rustup override set nightly-2019-04-24
 ```
 
 ## Usage
