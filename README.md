@@ -37,6 +37,7 @@ OPTIONS:
 $ cargo run -- -h localhost -p 8080
 Server is listening on: http://[::1]:8080
 
+# On another terminal...
 $ curl localhost:8080/ping
 OK
 
