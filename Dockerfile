@@ -1,4 +1,4 @@
-FROM clux/muslrust:nightly-2019-04-25
+FROM clux/muslrust:nightly-2019-05-11
 
 WORKDIR /app
 

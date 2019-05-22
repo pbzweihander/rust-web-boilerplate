@@ -15,7 +15,7 @@ pub async fn hello(ctx: Context<Opt>) -> EndpointResult<Response> {
 
 pub async fn hello_with_body(mut ctx: Context<Opt>) -> EndpointResult<Response> {
     let name: String = ctx.param("name").client_err()?;
-    let msg = await!(ctx.body_string()).client_err()?;
+    let msg = ctx.body_string().await.client_err()?;
 
     Ok(format!("Hello, {}!\nYour message was \"{}\".", name, msg).into_response())
 }
