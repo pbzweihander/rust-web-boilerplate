@@ -1,21 +1,17 @@
 use {
-    crate::config::Opt,
-    tide::{
-        error::{EndpointResult, ResultExt},
-        response::IntoResponse,
-        Context, Response,
-    },
+    crate::config::Config,
+    tide::{Request, Result},
 };
 
-pub async fn hello(ctx: Context<Opt>) -> EndpointResult<Response> {
-    let name: String = ctx.param("name").client_err()?;
+pub async fn hello(req: Request<Config>) -> Result {
+    let name: String = req.param("name")?;
 
-    Ok(format!("Hello, {}!", name).into_response())
+    Ok(format!("Hello, {}!", name).into())
 }
 
-pub async fn hello_with_body(mut ctx: Context<Opt>) -> EndpointResult<Response> {
-    let name: String = ctx.param("name").client_err()?;
-    let msg = ctx.body_string().await.client_err()?;
+pub async fn hello_with_body(mut req: Request<Config>) -> Result {
+    let name: String = req.param("name")?;
+    let msg = req.body_string().await?;
 
-    Ok(format!("Hello, {}!\nYour message was \"{}\".", name, msg).into_response())
+    Ok(format!("Hello, {}!\nYour message was \"{}\".", name, msg).into())
 }

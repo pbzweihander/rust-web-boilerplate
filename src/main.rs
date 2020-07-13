@@ -1,12 +1,13 @@
-use rust_web_boilerplate::{config::Opt, make_app};
+use rust_web_boilerplate::{config::Config, make_server};
 
-fn main() {
-    openssl_probe::init_ssl_cert_env_vars();
+#[async_std::main]
+async fn main() -> Result<(), std::io::Error> {
+    let config = Config::from_args();
+    let (host, port) = (config.host.clone(), config.port);
 
-    let opt = Opt::from_args();
-    let (host, port) = (opt.host.clone(), opt.port);
+    let server = make_server(config);
 
-    let app = make_app(opt);
+    server.listen((host.as_ref(), port)).await?;
 
-    app.serve((host.as_ref(), port)).unwrap();
+    Ok(())
 }

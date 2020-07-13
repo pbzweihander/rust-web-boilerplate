@@ -5,11 +5,7 @@ authors = ["pbzweihander <pbzweihander@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-tide = "0.2.0"
-futures-preview = "0.3.0-alpha.16"
-structopt = "0.2.15"
-openssl-probe = "0.1.2"
-
-[dev-dependencies]
-http-service-mock = "0.2.0"
-http-service = "0.2.0"
+async-std = { version = "1.6.2", features = ["attributes"] }
+futures = "0.3.5"
+structopt = "0.3.15"
+tide = "0.11.0"

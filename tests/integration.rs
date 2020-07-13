@@ -1,76 +1,62 @@
 use {
-    futures::executor::block_on,
-    http_service::Body,
-    http_service_mock::make_server,
-    rust_web_boilerplate::{config::Opt, make_app},
-    tide::http::Request,
+    rust_web_boilerplate::{config::Config, make_server},
+    tide::http::{Body, Request, Response, Url},
 };
 
-#[test]
-fn test_not_found() {
-    let opt = Opt {
+#[async_std::test]
+async fn test_not_found() {
+    let server = make_server(Config {
         host: "0.0.0.0".to_string(),
         port: 5000,
-    };
-    let app = make_app(opt);
+    });
 
-    let mut server = make_server(app.into_http_service()).unwrap();
-
-    let req = Request::get("/foobar").body(Body::empty()).unwrap();
-    let resp = server.simulate(req).unwrap();
+    let mut req = Request::get(Url::parse("http://localhost:5000/foobar").unwrap());
+    req.set_body(Body::empty());
+    let resp: Response = server.respond(req).await.unwrap();
     assert_eq!(resp.status(), 404);
 }
 
-#[test]
-fn test_ping() {
-    let opt = Opt {
+#[async_std::test]
+async fn test_ping() {
+    let server = make_server(Config {
         host: "0.0.0.0".to_string(),
         port: 5000,
-    };
-    let app = make_app(opt);
+    });
 
-    let mut server = make_server(app.into_http_service()).unwrap();
-
-    let req = Request::get("/ping").body(Body::empty()).unwrap();
-    let resp = server.simulate(req).unwrap();
+    let mut req = Request::get(Url::parse("http://localhost:5000/ping").unwrap());
+    req.set_body(Body::empty());
+    let mut resp: Response = server.respond(req).await.unwrap();
     assert_eq!(resp.status(), 200);
-    let body = block_on(resp.into_body().into_vec()).unwrap();
-    let body_str = String::from_utf8(body).unwrap();
-    assert_eq!(&body_str, "OK");
+    let body = resp.body_string().await.unwrap();
+    assert_eq!(&body, "OK");
 }
 
-#[test]
-fn test_hello() {
-    let opt = Opt {
+#[async_std::test]
+async fn test_hello() {
+    let server = make_server(Config {
         host: "0.0.0.0".to_string(),
         port: 5000,
-    };
-    let app = make_app(opt);
+    });
 
-    let mut server = make_server(app.into_http_service()).unwrap();
-
-    let req = Request::get("/hello/foobar").body(Body::empty()).unwrap();
-    let resp = server.simulate(req).unwrap();
+    let mut req = Request::get(Url::parse("http://localhost:5000/hello/foobar").unwrap());
+    req.set_body(Body::empty());
+    let mut resp: Response = server.respond(req).await.unwrap();
     assert_eq!(resp.status(), 200);
-    let body = block_on(resp.into_body().into_vec()).unwrap();
-    let body_str = String::from_utf8(body).unwrap();
-    assert_eq!(&body_str, "Hello, foobar!");
+    let body = resp.body_string().await.unwrap();
+    assert_eq!(&body, "Hello, foobar!");
 }
 
-#[test]
-fn test_hello_with_body() {
-    let opt = Opt {
+#[async_std::test]
+async fn test_hello_with_body() {
+    let server = make_server(Config {
         host: "0.0.0.0".to_string(),
         port: 5000,
-    };
-    let app = make_app(opt);
+    });
 
-    let mut server = make_server(app.into_http_service()).unwrap();
-
-    let req = Request::post("/hello/foobar").body("baz".into()).unwrap();
-    let resp = server.simulate(req).unwrap();
+    let mut req = Request::post(Url::parse("http://localhost:5000/hello/foobar").unwrap());
+    req.set_body("baz");
+    let mut resp: Response = server.respond(req).await.unwrap();
     assert_eq!(resp.status(), 200);
-    let body = block_on(resp.into_body().into_vec()).unwrap();
-    let body_str = String::from_utf8(body).unwrap();
-    assert_eq!(&body_str, "Hello, foobar!\nYour message was \"baz\".");
+    let body = resp.body_string().await.unwrap();
+    assert_eq!(&body, "Hello, foobar!\nYour message was \"baz\".");
 }

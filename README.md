@@ -5,15 +5,6 @@
 
 Are we web yet? Yes, almost! A boilerplate for working web server with Rust.
 
-## Setup
-
-This boilerplate uses [tide], which requires [futures 0.3], which requires the nightly version of rust.
-You can setup nightly rust just for this project with following command:
-
-```bash
-rustup override set nightly-2019-05-11
-```
-
 ## Usage
 
 Cool help messages from [structopt].
@@ -51,7 +42,7 @@ Your message was "I love Rust".
 
 ## Test
 
-With [tide] and [http-service-mock], you can write some integration tests for your web app! Check out [the test code][integration test code].
+Check out [the test code][integration test code].
 
 ```bash
 cargo test
