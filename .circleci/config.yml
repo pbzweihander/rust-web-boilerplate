@@ -15,7 +15,7 @@ jobs:
     - run:
         name: Install dependencies
         command: |
-          rustup component add clippy
+          rustup component add rustfmt clippy
     - checkout
     - restore_cache:
         keys:
