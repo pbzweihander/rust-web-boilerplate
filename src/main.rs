@@ -7,7 +7,7 @@ async fn main() -> Result<(), std::io::Error> {
 
     let server = make_server(config);
 
-    server.listen((host.as_ref(), port)).await?;
+    server.listen((host, port)).await?;
 
     Ok(())
 }
